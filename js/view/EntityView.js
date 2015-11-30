@@ -76,7 +76,7 @@ class AbilityView extends NodeView
 			var width = self.progress * (w-2);
 			var color = "#CCFF11";
 			if( self.m_pAbility.isOnCooldown() ) {
-				color = "#99DD00";
+				color = "#669900";
 			}
 			
 			gfx.drawRectEx(x - (w/2) + (width/2) + 1, y, width, h-2, color);

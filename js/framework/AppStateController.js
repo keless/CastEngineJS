@@ -82,7 +82,7 @@ class BaseStateModel extends BaseListener {
 class BaseStateView extends BaseListener {
 	constructor() {
 		super();
-		this.rootView = null;
+		this.rootView = new NodeView();
 	}
 	
 	Destroy() {

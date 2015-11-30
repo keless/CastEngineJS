@@ -14,6 +14,10 @@ function arrayContains( array, element ) {
 	return false;
 }
 
+function isString( obj ) {
+	return (typeof obj === 'string' || obj instanceof String);
+}
+
 
 //fnCallback = function (data)  where data = null on error
 function getJSON( url, fnCallback ) {

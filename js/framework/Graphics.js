@@ -178,6 +178,17 @@ class Graphics {
 		}
 		this.ctx.drawImage(img, x,y);
 	}
+	drawImageEx(img, x,y, w,h, hFlip) {
+		if(!hFlip) {
+			this.ctx.drawImage(img, 0,0,img.width,img.height, x,y, w,h);
+		}else {
+			this.ctx.save();
+			this.ctx.scale(-1,1);			
+			this.ctx.drawImage(img, 0,0,img.width,img.height, (x*-1) - img.width ,y, w,h);
+			this.ctx.restore();
+			//todo: reset scale 1,1 instead of save/restore
+		}
+	}
 	/// dx,dy are destination (on screen) coordinates
 	/// srcx,srcy are source image (in texture) coordinates
 	/// srcw,srch are source image width and height to capture

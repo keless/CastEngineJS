@@ -17,6 +17,7 @@ var game_create = function()
 	stateController.addState("loading", LoadingState);
 	stateController.addState("menu", MenuState);
 	stateController.addState("battle", BattleState);
+	stateController.addState("spellMaker", SpellMakerState);
 	
 	var resources = [
 			"gfx/btn_blue.sprite",
@@ -24,6 +25,7 @@ var game_create = function()
 			"gfx/btn_white.sprite",
 			"gfx/aelius_floor.jpg",
 			"gfx/explosion_1.sprite",
+			"gfx/workbench3.png"
 			];
 	stateController.gotoState("loading", [resources, "menu"]);
 	

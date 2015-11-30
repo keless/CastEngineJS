@@ -51,6 +51,11 @@ class NodeView {
 		});
 	}
 	setImage( image ) {
+		if( isString(image) ) {
+			var RP = Service.Get("rp");
+			image = RP.getImage(image); //load image url into image resource
+		}
+		
 		if(this.image) {
 			console.error("NodeView: already has an image, abort!");
 			return;
@@ -60,10 +65,31 @@ class NodeView {
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawImage(self.image, x, y);
 		});
-		
 	}
-	setSprite( sprite, spriteFrame, hFlip ) {
+	setImageStretch( image, x,y, w,h ) {
+		if( isString(image) ) {
+			var RP = Service.Get("rp");
+			image = RP.getImage(image); //load image url into image resource
+		}
+		
+		if(this.image) {
+			console.error("NodeView: already has an image, abort!");
+			return;
+		}
+		this.image = image;
+		var self = this;
+		this.fnCustomDraw.push(function(gfx, x,y, ct){
+			gfx.drawImageEx(self.image, x, y, w, h);
+		});
+	}
+	setSprite( sprite, spriteFrame, hFlip ) {		
 		hFlip = hFlip || false;
+		
+		if( isString(sprite) ) {
+			var RP = Service.Get("rp");
+			sprite = RP.getSprite(sprite); //load sprite url into sprite resource
+		}
+		
 		if(this.sprite) {
 			console.error("NodeView: already has a sprite, abort!");
 			return;

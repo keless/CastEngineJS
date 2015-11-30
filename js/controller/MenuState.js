@@ -12,15 +12,23 @@ class MenuStateView extends BaseStateView {
 		super();
 		var RP = Service.Get("rp");
 		var sprBtnBlue = RP.getSprite("gfx/btn_blue.sprite");
-		this.rootView = new ButtonView("btnMain", sprBtnBlue, "Main");
-		this.rootView.pos.setVal(150, 150);
+		
+		var btnMain = new ButtonView("btnMain", sprBtnBlue, "Main");
+		btnMain.pos.setVal(150, 150);
+		this.rootView.addChild(btnMain);
+		
+		var btnSpell = new ButtonView("btnSpellMaker", sprBtnBlue, "Spell Maker");
+		btnSpell.pos.setVal(150, 300);
+		this.rootView.addChild(btnSpell);
 		
 		this.SetListener("btnMain", this.onBtnMain);
+		this.SetListener("btnSpellMaker", this.onBtnSpellMaker);
 	}
 	
 	onBtnMain() {
-		var state = Service.Get("state");
-		
-		state.gotoState("battle");
+		Service.Get("state").gotoState("battle");
+	}
+	onBtnSpellMaker() {
+		Service.Get("state").gotoState("spellMaker");
 	}
 }

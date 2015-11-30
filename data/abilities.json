@@ -1,7 +1,7 @@
 var g_abilities = [
 	{
 		"name": "Attack",
-		"castTime": 0.15,
+		"castTime": 1.15,
 		"cooldownTime": 1.85,
 		"range": 500,
 		"effectsOnCast": [

@@ -23,8 +23,8 @@ class Application {
 		
 		var updateLastMousePos = function(e) {
 			var canvas = Service.Get("gfx").canvas;
-			var mouseX = e.clientX - canvas.left;
-			var mouseY = e.clientY - canvas.top;
+			var mouseX = e.clientX - (canvas.left || canvas.offsetLeft);
+			var mouseY = e.clientY - (canvas.top || canvas.offsetTop);
 			appSelf.lastMousePos.setVal(mouseX, mouseY);
 		}
 		

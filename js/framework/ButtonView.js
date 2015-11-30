@@ -14,6 +14,12 @@ class ButtonView extends NodeView {
 		this.size = new Vec2D();
 
 		this.btnID = btnID;		
+		
+		if(isString(sprite)) {
+			var RP = Service.Get("rp");
+			sprite = RP.getSprite(sprite);
+		}
+		
 		this.setSprite( sprite );
 		
 		this.setLabel( label, labelFont, labelStyle );

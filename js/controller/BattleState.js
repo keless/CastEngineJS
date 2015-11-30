@@ -117,10 +117,8 @@ class BattleStateView extends BaseStateView {
 		super();
 		
 		this.pModel = model;
-		
-		var RP = Service.Get("rp");
-		var sprBtnBlue = RP.getSprite("gfx/btn_blue.sprite");
-		this.rootView = new ButtonView("btnBack", sprBtnBlue, "Back");
+
+		this.rootView = new ButtonView("btnBack", "gfx/btn_blue.sprite", "Back");
 		this.rootView.pos.setVal(150, 25);
 	}
 	
