@@ -9,7 +9,7 @@ class Graphics {
 		this.strokeSize = 1;
 		this.font = "30px Arial";
 		
-		this.ctx = null;
+		this.ctx = this.canvas.getContext("2d");
 		this.drawCentered = Config ? Config.areSpritesCentered : false;
 		this.verbose = false;
 		
@@ -170,6 +170,13 @@ class Graphics {
 			//y -= sized.height/2;
 		}
 		this.ctx.fillText(strText,x,y);
+	}
+	getTextSize(text, font) {
+		this.ctx.font = font || this.font;
+		var w = this.ctx.measureText(text).width;
+		// fake it 'til you make it
+		var h = this.ctx.measureText("m").width;
+		return new Vec2D(w, h);
 	}
 	drawImage(img, x,y) {
 		if(this.drawCentered) {

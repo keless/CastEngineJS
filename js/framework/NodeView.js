@@ -6,12 +6,16 @@
 class NodeView {
 	constructor( ) {
 		this.pos = new Vec2D();
+		this.size = new Vec2D();
 		this.rotation = 0;
 
 		this.children = [];
 		this.parent = null;
 
 		this.fnCustomDraw = [];
+		
+		this.fnOnClick = null;
+		this.onClickCallChildren = true;
 	}
 	
 	Destroy() {
@@ -44,7 +48,7 @@ class NodeView {
 			console.error("NodeView: already has a rect, abort!");
 			return;
 		}
-		this.size = new Vec2D(w, h);
+		this.size.setVal( Math.max(this.size.x, w), Math.max(this.size.y, h));
 		//var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawRectEx(x, y, w, h, fillStyle);
@@ -61,6 +65,8 @@ class NodeView {
 			return;
 		}
 		this.image = image;
+		this.size.setVal( Math.max(this.size.x, image.width), Math.max(this.size.y, image.height));
+		
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawImage(self.image, x, y);
@@ -77,6 +83,8 @@ class NodeView {
 			return;
 		}
 		this.image = image;
+		this.size.setVal( Math.max(this.size.x, image.width), Math.max(this.size.y, image.height));
+		
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawImageEx(self.image, x, y, w, h);
@@ -97,6 +105,7 @@ class NodeView {
 		this.sprite = sprite;
 		this.spriteFrame = spriteFrame;
 		this.hFlip = hFlip;
+		this.size.setVal( Math.max(this.size.x, sprite.getWidth()), Math.max(this.size.y, sprite.getHeight()));
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			self.sprite.drawFrame(gfx, x, y, self.spriteFrame, self.hFlip);
@@ -130,6 +139,9 @@ class NodeView {
 		this.labelText = labelText;
 		this.labelFont = labelFont;
 		this.labelStyle = labelStyle;
+		var gfx = Service.Get("gfx");
+		var textSize = gfx.getTextSize(this.labelText, this.labelFont);
+		this.size.setVal( Math.max(this.size.x, textSize.x), Math.max(this.size.y, textSize.y));
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawTextEx(self.labelText, x, y, self.labelFont, self.labelStyle);
@@ -151,6 +163,11 @@ class NodeView {
 		this.fnCustomDraw.push(fn);
 	}
 	
+	setClick( fn, shouldCallChildren ) {
+		this.onClickCallChildren = shouldCallChildren || (fn?false:true);
+		this.fnOnClick = fn;
+	}
+	
 	//x,y should be sent relative to node origin
 	OnMouseDown(e, x,y) {
 		
@@ -164,10 +181,31 @@ class NodeView {
 			x = v.x;
 			y = v.y;
 		}
-		
-		for(var child of this.children) {
-			child.OnMouseDown(e, x, y);
+
+		if( this.fnOnClick ) {
+			var originX = 0;
+			var originY = 0;
+			if( Config.areSpritesCentered ) {
+				originX -= this.size.x/2;
+				originY -= this.size.y/2;
+			}
+			if(Rect2D.isPointInArea(x, y, originX, originY, this.size.x, this.size.y)) {
+				this.fnOnClick(e, x, y);
+			}
 		}
+		
+		if( this.onClickCallChildren ) {
+			for(var child of this.children) {
+				child.OnMouseDown(e, x, y);
+			}
+		}
+	}
+	
+	getWidth() {
+		return this.size.x;
+	}
+	getHeight() {
+		return this.size.y;
 	}
 	
 	//node heirarchy functions

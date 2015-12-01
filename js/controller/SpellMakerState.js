@@ -112,10 +112,10 @@ class SpellPageList extends NodeView {
 		super();
 		this.m_spellNames = [];
 		
-		var spells = g_spellDiagrams;
+		var spells = g_spellDiagrams["diagrams"];
 		for(var i=0; i<spells.length; i++) {
-			var pageName = "" + (i+1) + " " + spells[i]["name"] + "\n" + spells[i]["effects"] + " effects";
-			this.m_spellNames.push_back(pageName);
+			var pageName = "" + (i+1) + " " + spells[i]["name"] + "\n" + spells[i]["effects"].length + " effects";
+			this.m_spellNames.push(pageName);
 		}
 		
 		var gfx = Service.Get("gfx");
@@ -123,6 +123,17 @@ class SpellPageList extends NodeView {
 		var h = gfx.getHeight();
 		this.setRect(w,h, "rgba(240,227,132,0.5)");
 		this.pos.setVal(w/2, h/2);
+		
+		this.m_list = new TableView(w, h);
+		for(var labelText of this.m_spellNames) {
+			var node = new NodeView();
+			node.setLabel(labelText, "12px Arial", "rgb(0,0,0)");
+			node.setClick(function(){
+				console.log("clicked " + labelText);
+			});
+			this.m_list.addCell(node);
+		}
+		this.addChild(this.m_list);
 	}
 }
 
