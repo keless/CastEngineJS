@@ -10,6 +10,7 @@ class TableView extends NodeView {
 		this.m_cells = [];
 		this.m_scrollOffsetX = 0;
 		this.m_scrollOffsetY = 0;
+		this.padding = 5;
 		
 		this.size.setVal(w,h);
 		
@@ -38,20 +39,17 @@ class TableView extends NodeView {
 		
 		var off = 0;
 		if( this.direction == TableView.VERTICAL ) {
+			console.log("test mouse at pos "+x+","+(y - off))
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].OnMouseDown(e, x, (y - (this.size.y/4) + off));
-				off += this.m_cells[i].getHeight();
+				
+				this.m_cells[i].OnMouseDown(e, x, (y - off));
+				off += this.m_cells[i].getHeight() + this.padding;
 			}
 		} else {
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].OnMouseDown(e, (x + off), y - (this.size.y/4));
-				off += this.m_cells[i].getWidth();
+				this.m_cells[i].OnMouseDown(e, (x - off), y);
+				off += this.m_cells[i].getWidth() + this.padding;
 			}
-		}
-		
-		
-		for(var child of this.m_cells) {
-			child.OnMouseDown(e, x, y);
 		}
 	}
 	
@@ -62,13 +60,13 @@ class TableView extends NodeView {
 		var off = 0;
 		if( this.direction == TableView.VERTICAL ) {
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].Draw(gfx, x, (y - (this.size.y/4) + off), ct);
-				off += this.m_cells[i].getHeight();
+				this.m_cells[i].Draw(gfx, x, (y + off), ct);
+				off += this.m_cells[i].getHeight() + this.padding;
 			}
 		} else {
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].Draw(gfx, (x + off), y - (this.size.y/4), ct);
-				off += this.m_cells[i].getWidth();
+				this.m_cells[i].Draw(gfx, (x + off), y , ct);
+				off += this.m_cells[i].getWidth() + this.padding;
 			}
 		}
 	}

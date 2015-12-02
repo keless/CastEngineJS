@@ -127,13 +127,18 @@ class SpellPageList extends NodeView {
 		this.m_list = new TableView(w, h);
 		for(var labelText of this.m_spellNames) {
 			var node = new NodeView();
+node.setRect(150, 10, "rgb(255,0,0)")
 			node.setLabel(labelText, "12px Arial", "rgb(0,0,0)");
-			node.setClick(function(){
-				console.log("clicked " + labelText);
-			});
+			node.setClick( this.createSpellCallback(labelText) );
 			this.m_list.addCell(node);
 		}
 		this.addChild(this.m_list);
+	}
+	
+	createSpellCallback(labelText) {
+		return function() {
+			console.log("clicked " + labelText);
+		}
 	}
 }
 
