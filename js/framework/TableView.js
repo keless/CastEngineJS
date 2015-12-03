@@ -31,15 +31,15 @@ class TableView extends NodeView {
 	
 	//x,y should be sent relative to node origin
 	OnMouseDown(e, x,y) {
+
 		//make local to self origin
 		x -= this.pos.x;
 		y -= this.pos.y;
 		x -= this.m_scrollOffsetX;
-		y -= this.m_scrollOffsetY;
-		
+		y -= this.m_scrollOffsetY;	
+
 		var off = 0;
 		if( this.direction == TableView.VERTICAL ) {
-			console.log("test mouse at pos "+x+","+(y - off))
 			for( var i=0; i<this.m_cells.length; i++) {
 				
 				this.m_cells[i].OnMouseDown(e, x, (y - off));
@@ -54,20 +54,31 @@ class TableView extends NodeView {
 	}
 	
 	Draw( gfx, x, y, ct ) {
+		
+		gfx.saveMatrix();
+		gfx.translate(x + this.pos.x, y + this.pos.y);
+		
 		x -= this.m_scrollOffsetX;
 		y -= this.m_scrollOffsetY;
 		
 		var off = 0;
 		if( this.direction == TableView.VERTICAL ) {
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].Draw(gfx, x, (y + off), ct);
+				this.m_cells[i].Draw(gfx, 0, off, ct);
 				off += this.m_cells[i].getHeight() + this.padding;
 			}
 		} else {
 			for( var i=0; i<this.m_cells.length; i++) {
-				this.m_cells[i].Draw(gfx, (x + off), y , ct);
+				this.m_cells[i].Draw(gfx, off, 0, ct);
 				off += this.m_cells[i].getWidth() + this.padding;
 			}
 		}
+		
+		for(var child of this.children) {
+			//note: dont subtract this.pos, since we're using gfx.translate
+			child.Draw(gfx, 0, 0, ct);
+		}
+		
+		gfx.restoreMatrix();
 	}
 }

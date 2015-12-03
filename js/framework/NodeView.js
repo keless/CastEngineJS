@@ -254,12 +254,12 @@ class NodeView {
 		}
 		
 		for(var f of this.fnCustomDraw) {
-			f(gfx, x,y, ct);
+			f(gfx, 0,0, ct);
 		}
 		
 		for(var child of this.children) {
 			//note: dont subtract this.pos, since we're using gfx.translate
-			child.Draw(gfx, x, y, ct);
+			child.Draw(gfx, 0, 0, ct);
 		}
 
 		gfx.restoreMatrix();
