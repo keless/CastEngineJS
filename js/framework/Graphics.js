@@ -52,6 +52,7 @@ class Graphics {
 	
 	///note: origin (0,0) is top left
 	drawRect( x,y,w,h ) {
+		
 		this.ctx.fillStyle = this.fillStyle;
 		
 		if(this.verbose) console.log("rect at " + x +"," + y + " x " + w+","+h);
@@ -94,6 +95,25 @@ class Graphics {
 			y -= h/2;
 		}
 		this.ctx.strokeRect(x,y,w,h);
+	}
+	drawPolygonEx(verts, fillStyle, strokeSize, strokeStyle) {
+		this.ctx.strokeStyle = strokeStyle || this.strokeStyle;
+		this.ctx.fillStyle = fillStyle || this.fillStyle;
+		
+		this.ctx.beginPath();
+		var vert = verts[0];
+		this.ctx.moveTo(vert.x, vert.y);
+		for( var i=1; i<verts.length; i++) {
+			this.ctx.lineTo();
+		}
+		
+		this.ctx.endPath();
+		if(this.ctx.fillStyle) {
+			this.ctx.fill();
+		}
+		if(this.ctx.strokeStyle) {
+			this.ctx.stroke();
+		}
 	}
 	drawLine(x1,y1, x2,y2) {
 		this.ctx.strokeStyle = this.strokeStyle;

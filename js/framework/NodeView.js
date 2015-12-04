@@ -3,8 +3,9 @@
 
 //scene node heirarchy of sprites/animations
 
-class NodeView {
+class NodeView extends BaseListener {
 	constructor( ) {
+		super();
 		this.pos = new Vec2D();
 		this.size = new Vec2D();
 		this.rotation = 0;
@@ -23,6 +24,8 @@ class NodeView {
 		for(var child of this.children) {
 			child.Destroy();
 		}
+		
+		super.Destroy();
 	}
 	
 	get worldRotation() {
@@ -44,14 +47,15 @@ class NodeView {
 		});
 	}
 	setRect( w, h, fillStyle ) {
-		if(this.image) {
-			console.error("NodeView: already has a rect, abort!");
-			return;
-		}
 		this.size.setVal( Math.max(this.size.x, w), Math.max(this.size.y, h));
 		//var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
 			gfx.drawRectEx(x, y, w, h, fillStyle);
+		});
+	}
+	setPolygon( arrVerts, fill, strokeSize, outline ) {
+		this.fnCustomDraw.push(function(gfx,x,y,ct) {
+			gfx.drawPolygon(arrVerts, fill, strokeSize, outline);
 		});
 	}
 	setImage( image ) {

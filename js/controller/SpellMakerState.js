@@ -141,9 +141,113 @@ class SpellPageList extends NodeView {
 	}
 }
 
+
+var SD_01_NOVICE_CIRCLE = 0;
+var SD_02_BLIND_EYE = 1;
+var SD_03_ADEPTS_CIRCLE = 2;
+var SD_04_LESSER_PYRAMID = 3;
+var SD_05_SERPENTS_EYE = 4;
+var SD_06_LESSER_TRIQUESTRA = 5;
+var SD_07_COMPASS = 6;
+var SD_08_FORTRESS = 7;
+var SD_09_DRAGONS_EYE = 8;
+var SD_10_SEEING_EYE = 9;
+var SD_11_LEAF = 10;
+var SD_12_GREATER_PYRAMID = 11;
+var SD_13_GREATER_TRIQUETRA = 12;
+var SD_COUNT = 13;
+var SD_INVALID = -1
+
 class SpellDiagramNode extends NodeView {
 	constructor() {
 		super();
+		
+		this.m_type = SD_INVALID;
+		this.m_slotEquipMenu = null;
+		this.m_spellDiagrams = ;
+		this.m_size;
+		this.m_effectSlots = [];
+		this.m_modSlots = [];
+		this.m_effectsJson = {};
+		this.m_modSlots = {};
+		
+		this.SetListener("slotMenuCancel", this.onMenuCancel.bind(this));
+		this.SetListener("slotMenuMod", this.onMenuMod.bind(this));
+		this.SetListener("slotMenuEff", this.onMenuEff.bind(this));
+	}
+	
+	createPentNode( fill, outline)
+	{
+		var pent = [];
+		pent.push( new Vec2D(0,10) );
+		pent.push( new Vec2D(10,2) );
+		pent.push( new Vec2D(5,-7) );
+		pent.push( new Vec2D(-5,-7) );
+		pent.push( new Vec2D(-10,2) );
+	
+		var pt = new NodeView();
+		pt.setPolygon(pent, fill, 1, outline);
+		return pt;
+	}
+	
+	prepareDiagram( numEffects, numMods ) {
+		
+	}
+	trimEffectsSize( maxEffects ) {
+		
+	}
+	trimModsSize( maxMods ) {
+		
+	}
+	addEffect( idx, x, y, level) {
+		
+	}
+	addMod( idx, x, y, level) {
+		
+	}
+
+	createModSlotMenu( slotEquipMenu, pos, idx ) {
+		
+	}
+	createEffSlotMenu( slotEquipMenu, pos, idx ) {
+		
+	}
+
+	onMenuCancel(e) {
+		
+	}
+	onMenuMod(e) {
+		
+	}
+	onMenuEff(e) {
+		
+	}
+	
+	getSpellDiagramJson() {
+		var json = {};
+
+		var diagram = this.m_spellDiagrams[this.m_type];
+		json["diagramLevel"] = diagram["lines"].length;
+		json["diagramName"] = diagram["name"];
+		json["effects"] = {};
+		for( var i=0; i< this.m_effectSlots.length; i++) {
+			if( !this.m_effectsJson.hasOwnProperty(i) ) {
+				json["effects"].append({});
+			}else {
+				json["effects"].append( this.m_effectsJson[i] );
+			}
+		}
+		
+		json["mods"] = {};
+		for( var i=0; i< this.m_modSlots.length; i++) {
+			if( !this.m_modsJson.hasOwnProperty(i) ) {
+				json["mods"].append({});
+			}else {
+				json["mods"].append( this.m_modsJson[i] );
+			}
+		}
+		
+		return json;
 	}
 }
 
