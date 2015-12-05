@@ -53,9 +53,9 @@ class NodeView extends BaseListener {
 			gfx.drawRectEx(x, y, w, h, fillStyle);
 		});
 	}
-	setPolygon( arrVerts, fill, strokeSize, outline ) {
+	setPolygon( arrVerts, fill, stroke, strokeSize ) {
 		this.fnCustomDraw.push(function(gfx,x,y,ct) {
-			gfx.drawPolygonEx(arrVerts, fill, outline, strokeSize);
+			gfx.drawPolygon(arrVerts, fill, stroke, strokeSize );
 		});
 	}
 	setImage( image ) {

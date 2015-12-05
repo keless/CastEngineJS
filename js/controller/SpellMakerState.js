@@ -210,7 +210,7 @@ class SpellDiagramNode extends NodeView {
 		pent.push( new Vec2D(-10,2) );
 	
 		var pt = new NodeView();
-		pt.setPolygon(pent, fill, 1, outline);
+		pt.setPolygon(pent, fill, outline, 1);
 		return pt;
 	}
 	
