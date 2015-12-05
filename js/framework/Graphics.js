@@ -97,8 +97,9 @@ class Graphics {
 		this.ctx.strokeRect(x,y,w,h);
 	}
 	drawPolygonEx(verts, fillStyle, strokeStyle, strokeSize) {
-		this.ctx.strokeStyle = strokeStyle || this.strokeStyle;
 		this.ctx.fillStyle = fillStyle || this.fillStyle;
+		this.ctx.strokeStyle = strokeStyle || this.strokeStyle;
+		this.ctx.strokeSize = strokeSize || this.strokeSize;
 		
 		this.ctx.beginPath();
 		var vert = verts[0];
