@@ -50,6 +50,12 @@ class Graphics {
 		this.ctx.scale( scaleVal, scaleVal );
 	}
 	
+	_setStyle( param, selfParam ) {
+		if( param == "" ) return false;
+		if( param == undefined ) return selfParam;
+		return param;
+	}
+
 	///note: origin (0,0) is top left
 	drawRect( x,y,w,h ) {
 		
@@ -97,9 +103,11 @@ class Graphics {
 		this.ctx.strokeRect(x,y,w,h);
 	}
 	drawPolygonEx(verts, fillStyle, strokeStyle, strokeSize) {
-		this.ctx.fillStyle = fillStyle || this.fillStyle;
-		this.ctx.strokeStyle = strokeStyle || this.strokeStyle;
-		this.ctx.strokeSize = strokeSize || this.strokeSize;
+		var fs = this._setStyle(fillStyle, this.fillStyle);
+		var ss = this._setStyle(strokeStyle , this.strokeStyle);
+		this.ctx.fillStyle = fs;
+		this.ctx.strokeStyle = ss;
+		this.ctx.lineWidth = strokeSize || this.strokeSize;
 		
 		this.ctx.beginPath();
 		var vert = verts[0];
@@ -109,17 +117,15 @@ class Graphics {
 		}
 		
 		this.ctx.closePath();
-		if(this.ctx.fillStyle) {
-			this.ctx.fill();
-		}
-		if(this.ctx.strokeStyle) {
-			this.ctx.stroke();
-		}
+		if(fs) { this.ctx.fill(); }
+		if(ss) { this.ctx.stroke(); }
 	}
 	drawCubicBezierEx(verts, fillStyle, strokeStyle, strokeSize) {
-		this.ctx.fillStyle = fillStyle;
-		this.ctx.strokeStyle = strokeStyle;
-		this.ctx.strokeSize = strokeSize || this.strokeSize;
+		var fs = this._setStyle(fillStyle, this.fillStyle);
+		var ss = this._setStyle(strokeStyle , this.strokeStyle);
+		this.ctx.fillStyle = fs;
+		this.ctx.strokeStyle = ss;
+		this.ctx.lineWidth = strokeSize || this.strokeSize;
 		
 		if(verts.length != 4) {
 			console.warn("Graphics.drawCubicBezierEx() - invalid number of verts, must be 4");
@@ -130,16 +136,12 @@ class Graphics {
 		this.ctx.moveTo(verts[0].x, verts[0].y);
 		this.ctx.bezierCurveTo(verts[1].x, verts[1].y, verts[2].x, verts[2].y, verts[3].x, verts[3].y);
 		this.ctx.closePath();
-		if(this.ctx.fillStyle) {
-			this.ctx.fill();
-		}
-		if(this.ctx.strokeStyle) {
-			this.ctx.stroke();
-		}
+		if(fs) { this.ctx.fill(); }
+		if(ss) { this.ctx.stroke(); }
 	}
 	drawLine(x1,y1, x2,y2) {
 		this.ctx.strokeStyle = this.strokeStyle;
-		this.ctx.strokeSize = this.strokeSize;
+		this.ctx.lineWidth = this.strokeSize;
 		
 		this.ctx.beginPath();
 		this.ctx.moveTo(x1,y1);
@@ -150,7 +152,7 @@ class Graphics {
 	}
 	drawLineEx(x1,y1, x2,y2, strokeStyle, strokeSize) {
 		this.ctx.strokeStyle = strokeStyle || this.strokeStyle;
-		this.ctx.strokeSize = strokeSize || this.strokeSize;
+		this.ctx.lineWidth = strokeSize || this.strokeSize;
 		
 		this.ctx.beginPath();
 		this.ctx.moveTo(x1,y1);
@@ -161,39 +163,35 @@ class Graphics {
 	}
 	drawCircle(x1,y1, radius) {
 		//set state
-		this.ctx.fillStyle = this.fillStyle;
-		this.ctx.strokeStyle = this.strokeStyle;
+		var fs = this.fillStyle;
+		var ss = this.strokeStyle;
+		this.ctx.fillStyle = fs;
+		this.ctx.strokeStyle = ss;
 		this.ctx.lineWidth = this.strokeSize;
 		
 		//draw
 		this.ctx.beginPath();
 		this.ctx.arc(x1, y1, radius, 0, 2 * Math.PI, false); //false=clockwise
 		this.ctx.closePath();
-		if(this.ctx.fillStyle) {
-			this.ctx.fill();
-		}
-		if(this.ctx.strokeStyle) {
-			this.ctx.stroke();
-		}
+		if(fs) { this.ctx.fill(); }
+		if(ss) { this.ctx.stroke(); }
 		
 		if(this.verbose) console.log("circle at " + x1 +"," + y1 + " x " + radius);
 	}
 	drawCircleEx(x1,y1, radius, fillStyle, strokeStyle, strokeSize) {
 		//set state
-		this.ctx.fillStyle = fillStyle;
-		this.ctx.strokeStyle = strokeStyle;
+		var fs = this._setStyle(fillStyle, this.fillStyle);
+		var ss = this._setStyle(strokeStyle , this.strokeStyle);
+		this.ctx.fillStyle = fs;
+		this.ctx.strokeStyle = ss;
 		this.ctx.lineWidth = strokeSize || this.strokeSize;
 		
 		//draw
 		this.ctx.beginPath();
 		this.ctx.arc(x1, y1, radius, 0, 2 * Math.PI, false); //false=clockwise
 		this.ctx.closePath();
-		if(this.ctx.fillStyle) {
-			this.ctx.fill();
-		}
-		if(this.ctx.strokeStyle) {
-			this.ctx.stroke();
-		}
+		if(fs) { this.ctx.fill(); }
+		if(ss) { this.ctx.stroke(); }
 	}
 	drawText(strText, x,y ) {
 		this.ctx.font = this.font;

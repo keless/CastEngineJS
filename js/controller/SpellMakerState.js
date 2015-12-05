@@ -37,7 +37,8 @@ class SpellMakerView extends BaseStateView {
 	}
 	
 	onSpellPageSelected(e) {
-		this.m_spellDiagram.setDiagram( e.idx || SD_INVALID );
+		if (e.idx == undefined) e.idx = SD_INVALID;
+		this.m_spellDiagram.setDiagram( e.idx );
 	}
 	
 	onSpellSave() {
@@ -161,8 +162,8 @@ var SD_13_GREATER_TRIQUETRA = 12;
 var SD_COUNT = 13;
 var SD_INVALID = -1
 
-var MOD_COLOR = "rgba(0,1,0,1)";
-var EFF_COLOR = "rgba(1,0,0,1)";
+var MOD_COLOR = "rgba(0,255,0,1)";
+var EFF_COLOR = "rgba(255,0,0,1)";
 
 var DSIZE = 400;
 
@@ -366,7 +367,7 @@ class SpellDiagramNode extends NodeView {
 			var size = this.m_size;
 			var ptSize = 5;
 			var fill = "";
-			var stroke = "rgb(0,0,1)";
+			var stroke = "rgb(0,0,255)";
 			for( var i=0; i< lines.length; i++)
 			{
 				var pts;
