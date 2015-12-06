@@ -9,9 +9,12 @@ class NodeView extends BaseListener {
 		this.pos = new Vec2D();
 		this.size = new Vec2D();
 		this.rotation = 0;
+		this.scale = 1;
 
 		this.children = [];
 		this.parent = null;
+		
+		this.actions = [];
 
 		this.fnCustomDraw = [];
 		
@@ -251,11 +254,17 @@ class NodeView extends BaseListener {
 	//draw function
 	Draw( gfx, x, y, ct ) {
 		
+		this.handleActions(ct);
+		
 		gfx.saveMatrix();
 		gfx.translate(x + this.pos.x, y + this.pos.y);
 
 		if(this.rotation != 0) {
 			gfx.rotate(this.rotation);
+		}
+		
+		if(this.scale != 1) {
+			gfx.scale(this.scale);
 		}
 		
 		for(var f of this.fnCustomDraw) {
@@ -268,5 +277,111 @@ class NodeView extends BaseListener {
 		}
 
 		gfx.restoreMatrix();
+	}
+	
+	handleActions( ct ) {
+		if( this.actions.length == 0 ) return;
+		
+		var remove = [];
+		for( var i =0; i < this.actions.length; i++ ) {
+			var action = this.actions[i];
+			
+			if( action.isDone ) {
+				remove.push(i);
+			}else {
+				action.Update( ct );
+			}
+		}
+		
+		if( remove.length > 0 ) {
+			for( var e = remove.length - 1; e >= 0; e --) {
+				this.actions.splice( remove[e], 1 );
+			}
+		}
+	}
+	
+	tweenScale( dt, endVal ) {
+		this.setTween("scale", dt, endVal);	
+	}
+	tweenPos( dt, endVal ) {
+		this.setVecTween("pos", dt, endVal);
+	}
+	setTween( paramName, dt, endVal ) {
+		var action = new NodeAction_float(paramName, dt, endVal);
+		action.setTarget(this);
+		this.actions.push(action);
+	}
+	setVecTween( paramName, dt, endVal ) {
+		var action = new NodeAction_vec2d(paramName, dt, endVal);
+		action.setTarget(this);
+		this.actions.push(action);
+	}
+}
+
+class NodeAction {
+	constructor( propertyName, lifeTime, endVal ) {
+		this.startTime = 0;
+		this.lifeTime = lifeTime;
+		this.target = null;
+		this.propertyName = propertyName;
+		this.isDone = false;
+		this.fnOnComplete = null;
+		this.startVal = null;
+		this.endVal = endVal;
+	}
+	
+	Destroy() {
+		this.target = null;
+	}
+	
+	setTarget( target ) {
+		this.target = target;
+		this.startVal = this.target[ this.propertyName ];
+	}
+	
+	_calculateDT( ct ) {
+		var dt = ct - this.startTime;
+		if( dt < 0 )  return  0;
+		else if( dt >= this.lifeTime ) return 1;
+		else return dt / this.lifeTime;
+	}
+	
+	Update( ct ) {
+		if( this.startTime == 0 ) {
+			this.startTime = ct;
+		}
+		//determine end or continue
+		var pct = this._calculateDT(ct);
+		//if end
+		if( pct >= 1) {
+			//end
+			this.isDone = true;
+			if( this.fnOnComplete ) {
+				this.fnOnComplete();
+				this.fnOnComplete = null;
+			}
+		}else {
+			//continue
+			var interp = this.getInterpolatedVal(pct);
+			this.target[this.propertyName] = interp;
+		}
+	}
+
+	getInterpolatedVal( pct ) {
+		//override me
+	}
+}
+
+class NodeAction_float extends NodeAction {	
+	getInterpolatedVal( dt ) {
+		var delta = this.endVal - this.startVal;
+		return this.startVal + delta * dt;
+	}
+}
+
+class NodeAction_vec2d extends NodeAction {
+	getInterpolatedVal( dt ) {
+		var delta = this.endVal.getVecSub( this.startVal );
+		return this.startVal.getVecAdd( delta.scalarMult( dt ) );
 	}
 }

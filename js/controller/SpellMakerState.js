@@ -166,6 +166,7 @@ var MOD_COLOR = "rgba(0,255,0,1)";
 var EFF_COLOR = "rgba(255,0,0,1)";
 
 var DSIZE = 400;
+var TRANSITION_TIME = 0.5;
 
 //triangle
 var tA = new Vec2D(0, DSIZE*0.5); //top
@@ -252,6 +253,7 @@ class SpellDiagramNode extends NodeView {
 		if( idx < this.m_effectSlots.length )
 		{
 			pt = this.m_effectSlots[idx];
+			pt.tweenPos( TRANSITION_TIME, new Vec2D(x,y));
 //TODO			pt->runAction( CCMoveTo::create(TRANSITION_TIME, ccp(x,y)) );
 			pt.pos.setVal(x,y); //temp
 		}else {
@@ -259,6 +261,8 @@ class SpellDiagramNode extends NodeView {
 			pt = this.createPentNode(EFF_COLOR, "rgba(0,0,0,1)");
 			pt.pos.setVal(x,y);
 			this.addChild(pt);
+			pt.scale = 0.01;
+			pt.tweenScale( TRANSITION_TIME/2, 1);
 //TODO pt.setScale(0.01);
 //TODO: pt->runAction(CCScaleTo::create(TRANSITION_TIME/2, 1,1));
 			this.m_effectSlots.push(pt);
@@ -277,6 +281,9 @@ class SpellDiagramNode extends NodeView {
 			pt = this.createPentNode(MOD_COLOR, "rgba(0,0,0,1)");
 			pt.pos.setVal(x,y);
 			this.addChild(pt);
+			
+			this.scale = 0.01;
+			this.tweenScale( TRANSITION_TIME/2, 1);
 //TODO pt.setScale(0.01);
 //TODO: pt->runAction(CCScaleTo::create(TRANSITION_TIME/2, 1,1));
 			this.m_modSlots.push(pt);

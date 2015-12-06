@@ -9,6 +9,12 @@ class EventBus {
 		this.busName = strBusName;
 		this.verbose = true;
   }
+  
+  Destroy() {
+    for( var evt of this.listeners ) {
+      this.clearListeners(evt);
+    }
+  }
 
   addListener ( strEventName, callbackFunction ) {
     if( !(strEventName in this.listeners) )
