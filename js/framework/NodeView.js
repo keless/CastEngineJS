@@ -11,6 +11,8 @@ class NodeView extends BaseListener {
 		this.rotation = 0;
 		this.scale = 1;
 
+		this.pUser = null;
+
 		this.children = [];
 		this.parent = null;
 		
@@ -38,7 +40,14 @@ class NodeView extends BaseListener {
 		return this.rotation;
 	}
 	
-	setCircle( radius ) {
+	setUserData( data ) {
+		this.pUser = data;
+	}
+	getUserData() {
+		return this.pUser;
+	}
+	
+	setCircle( radius, fillStyle, strokeStyle ) {
 		if(this.circleRadius) {
 			console.error("NodeView: already has a circle, abort!");
 			return;
@@ -46,7 +55,7 @@ class NodeView extends BaseListener {
 		this.circleRadius = radius;
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
-			gfx.drawCircle(x, y, self.circleRadius);
+			gfx.drawCircle(x, y, self.circleRadius, fillStyle, strokeStyle);
 		});
 	}
 	setRect( w, h, fillStyle ) {
@@ -355,6 +364,7 @@ class NodeAction {
 		//if end
 		if( pct >= 1) {
 			//end
+			this.target[this.propertyName] = this.endVal;
 			this.isDone = true;
 			if( this.fnOnComplete ) {
 				this.fnOnComplete();

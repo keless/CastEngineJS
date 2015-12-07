@@ -162,8 +162,10 @@ var SD_13_GREATER_TRIQUETRA = 12;
 var SD_COUNT = 13;
 var SD_INVALID = -1
 
-var MOD_COLOR = "rgba(0,255,0,1)";
-var EFF_COLOR = "rgba(255,0,0,1)";
+var MOD_COLOR = "rgb(0,255,0)";
+var EFF_COLOR = "rgb(255,0,0)";
+var LINE_COLOR = "rgb(0,0,255)";
+var BLACK_COLOR = "rgb(0,0,0)";
 
 var DSIZE = 400;
 var TRANSITION_TIME = 0.5;
@@ -183,6 +185,8 @@ class SpellDiagramNode extends NodeView {
 	constructor() {
 		super();
 		
+		this.size.setVal( DSIZE, DSIZE );
+		
 		this.m_type = SD_INVALID;
 		this.m_slotEquipMenu = null;
 		this.m_spellDiagrams = null;
@@ -196,6 +200,8 @@ class SpellDiagramNode extends NodeView {
 		this.m_spellParts_Effects = JM.getJson("SpellParts_Effects");
 		
 		this.m_spellDiagrams = g_spellDiagrams["diagrams"];
+		
+		this.setClick( this.onClick.bind(this), false );
 		
 		this.SetListener("slotMenuCancel", this.onMenuCancel.bind(this));
 		this.SetListener("slotMenuMod", this.onMenuMod.bind(this));
@@ -254,17 +260,13 @@ class SpellDiagramNode extends NodeView {
 		{
 			pt = this.m_effectSlots[idx];
 			pt.tweenPos( TRANSITION_TIME, new Vec2D(x,y));
-//TODO			pt->runAction( CCMoveTo::create(TRANSITION_TIME, ccp(x,y)) );
-			pt.pos.setVal(x,y); //temp
 		}else {
 			//create new
-			pt = this.createPentNode(EFF_COLOR, "rgba(0,0,0,1)");
+			pt = this.createPentNode(EFF_COLOR, BLACK_COLOR);
 			pt.pos.setVal(x,y);
 			this.addChild(pt);
 			pt.scale = 0.01;
 			pt.tweenScale( TRANSITION_TIME/2, 1);
-//TODO pt.setScale(0.01);
-//TODO: pt->runAction(CCScaleTo::create(TRANSITION_TIME/2, 1,1));
 			this.m_effectSlots.push(pt);
 		}
 	}
@@ -274,18 +276,14 @@ class SpellDiagramNode extends NodeView {
 		if( idx < this.m_modSlots.length )
 		{
 			pt = this.m_modSlots[idx];
-			//TODO: pt->runAction( CCMoveTo::create(TRANSITION_TIME, ccp(x,y)) );
-			pt.pos.setVal(x,y); //temp
+			pt.tweenPos( TRANSITION_TIME, new Vec2D(x,y));
 		}else {
 	
-			pt = this.createPentNode(MOD_COLOR, "rgba(0,0,0,1)");
+			pt = this.createPentNode(MOD_COLOR, BLACK_COLOR);
 			pt.pos.setVal(x,y);
 			this.addChild(pt);
-			
-			this.scale = 0.01;
-			this.tweenScale( TRANSITION_TIME/2, 1);
-//TODO pt.setScale(0.01);
-//TODO: pt->runAction(CCScaleTo::create(TRANSITION_TIME/2, 1,1));
+			pt.scale = 0.01;
+			pt.tweenScale( TRANSITION_TIME/2, 1);
 			this.m_modSlots.push(pt);
 		}
 	}
@@ -321,21 +319,93 @@ class SpellDiagramNode extends NodeView {
 		EventBus.game.dispatch({evtName:"spellEditorUpdate", json:this.getSpellDiagramJson()});
 	}
 
+	onClick(e, x, y) {
+		var slotRadiusSq  = 25 * 25;
+		var p = new Vec2D(x,y);
+		if( this.m_slotEquipMenu == null ) {
+			var sp;
+			for( var i=0; i< this.m_effectSlots.length; i++) {
+				sp = this.m_effectSlots[i].pos;
+				if( p.getMagSq(sp) <= slotRadiusSq ) {
+					console.log("touched effect " + i);
+					this.m_slotEquipMenu = new RadialLayer();
+					this.createEffSlotMenu(this.m_slotEquipMenu, sp, i);
+					return;
+				}
+			}
+			
+			for( var i=0; i< this.m_modSlots.length; i++) {
+				sp = this.m_modSlots[i].pos;
+				if( p.getMagSq(sp) <= slotRadiusSq ) {
+					console.log("touched mod " + i);
+					this.m_slotEquipMenu = new RadialLayer();
+					this.createEffSlotMenu(this.m_slotEquipMenu, sp, i);
+					return;
+				}
+			}
+		}
+	}
+
 	createModSlotMenu( slotEquipMenu, pos, idx ) {
-		//todo
+		this.m_slotEquipMenu.setCenterNode(this.createPentNode(MOD_COLOR, BLACK_COLOR));
+		this.m_slotEquipMenu.pos.setVec( pos );
+		this.addChild(this.m_slotEquipMenu);
+
+		var label = new NodeView();
+		label.setLabel("cancel", "20pt Arial");
+		label.setClick(function(e){
+			EventBus.ui.dispatch("slotMenuCancel");
+		});
+		this.m_slotEquipMenu.addItem(label);
+		
+		for( var modName in this.m_spellParts_Mods )
+		{
+			label = new NodeView();
+			label.setLabel(modName, "20pt Helvetica")
+			label.setUserData({ name:modName, idx:idx });
+			label.setClick(function(e){
+				EventBus.ui.dispatch("slotMenuMod");
+			});
+			this.m_slotEquipMenu.addItem(label);
+		}
 	}
 	createEffSlotMenu( slotEquipMenu, pos, idx ) {
-		//todo
+		this.m_slotEquipMenu.setCenterNode(this.createPentNode(MOD_COLOR, BLACK_COLOR));
+		this.m_slotEquipMenu.pos.setVec( pos );
+		this.addChild(this.m_slotEquipMenu);
+
+		var label = new NodeView();
+		label.setLabel("cancel", "20pt Arial");
+		label.setClick(function(e){
+			EventBus.ui.dispatch("slotMenuCancel");
+		});
+		this.m_slotEquipMenu.addItem(label);
+		
+		for( var modName in this.m_spellParts_Effects )
+		{
+			label = new NodeView();
+			label.setLabel(modName, "20pt Helvetica")
+			label.setUserData({ name:modName, idx:idx });
+			label.setClick(function(e){
+				EventBus.ui.dispatch("slotMenuEff");
+			});
+			this.m_slotEquipMenu.addItem(label);
+		}
 	}
 
 	onMenuCancel(e) {
-		//todo
+		if( this.m_slotEquipMenu != null) {
+			this.m_slotEquipMenu.removeFromParent(true);
+			this.m_slotEquipMenu = null;
+		}
 	}
 	onMenuMod(e) {
 		//todo
+		console.log("on menu mod");
 	}
 	onMenuEff(e) {
 		//todo
+		console.log("on menu eff");
 	}
 	
 	getSpellDiagramJson() {
@@ -374,7 +444,7 @@ class SpellDiagramNode extends NodeView {
 			var size = this.m_size;
 			var ptSize = 5;
 			var fill = "";
-			var stroke = "rgb(0,0,255)";
+			var stroke = LINE_COLOR;
 			for( var i=0; i< lines.length; i++)
 			{
 				var pts;
@@ -403,5 +473,48 @@ class SpellDiagramNode extends NodeView {
 class SpellDescriptionView extends NodeView {
 	constructor() {
 		super();
+	}
+}
+
+class RadialLayer extends NodeView {
+	constructor( radius, tierRadius ) {
+		super();
+		this.m_center = null;
+
+		this.m_items = [];
+		this.m_radius = radius;
+		this.m_tierRadius = tierRadius;
+		
+		this.setCircle(150, "rgba(200,200,200, 0.7)");
+		this.scale = 0.5;
+		this.tweenScale(0.5, 1);
+	}
+	
+	setCenterNode( node ) {
+		if( this.m_center != null ) {
+			this.removeChild(this.m_center);
+			this.m_center = null;
+		}
+		
+		this.m_center = node;
+		this.m_center.pos.setVal(0,0);
+		this.addChild(this.m_center);
+	}
+	
+	addItem( node ) {
+		this.m_items.push(node);
+		
+		//rearrange positions
+		var delta = (2 * Math.PI) / this.m_items.length;
+		
+		var tier = 1;
+		var tRadius = tier * this.m_tierRadius;
+		for( var i=0; i< this.m_items.length; i++) 
+		{
+			var x = (tRadius)* Math.cos(delta);
+			var y = (tRadius)* Math.sin(delta);
+			
+			this.m_items[i].pos.setVal(x,y);
+		}
 	}
 }
