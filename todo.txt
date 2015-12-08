@@ -1,3 +1,11 @@
+12/7/15
+* working on radial layer menus for spell editing state
+
 11/26/15 
 * initial conversion of C++ cast engine to javascript
 * implementing tests to prove it
+
+----
+TODO:
+
+* add multi-line support for NodeView labels

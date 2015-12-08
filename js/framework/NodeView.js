@@ -55,7 +55,7 @@ class NodeView extends BaseListener {
 		this.circleRadius = radius;
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
-			gfx.drawCircle(x, y, self.circleRadius, fillStyle, strokeStyle);
+			gfx.drawCircleEx(x, y, self.circleRadius, fillStyle, strokeStyle);
 		});
 	}
 	setRect( w, h, fillStyle ) {
@@ -181,7 +181,7 @@ class NodeView extends BaseListener {
 	}
 	
 	setClick( fn, shouldCallChildren ) {
-		this.onClickCallChildren = shouldCallChildren || (fn?false:true);
+		this.onClickCallChildren = shouldCallChildren || true;
 		this.fnOnClick = fn;
 	}
 	
@@ -200,12 +200,8 @@ class NodeView extends BaseListener {
 		}
 
 		if( this.fnOnClick ) {
-			var originX = 0;
-			var originY = 0;
-			if( Config.areSpritesCentered ) {
-				originX -= this.size.x/2;
-				originY -= this.size.y/2;
-			}
+			var originX = -this.size.x/2;
+			var originY = -this.size.y/2;
 			if(Rect2D.isPointInArea(x, y, originX, originY, this.size.x, this.size.y)) {
 				this.fnOnClick(e, x, y);
 			}

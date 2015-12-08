@@ -21,7 +21,7 @@ class SpellMakerView extends BaseStateView {
 		
 		
 		this.m_spellPageList = new SpellPageList();
-		this.rootView.addChild(this.m_spellPageList);
+		//test this.rootView.addChild(this.m_spellPageList);
 		
 		this.m_spellDiagram = new SpellDiagramNode();
 		this.m_spellDiagram.pos.setVal( gfx.getWidth()/2, gfx.getHeight()/2 );
@@ -34,6 +34,10 @@ class SpellMakerView extends BaseStateView {
 		this.SetListener("pageSelected", this.onSpellPageSelected.bind(this));
 		this.SetListener("saveSpell", this.onSpellSave.bind(this));
 		this.SetListener("saveSpellNamed", this.onSpellSaveNamed.bind(this));
+		
+		
+		//test
+		this.m_spellDiagram.setDiagram( 1 );
 	}
 	
 	onSpellPageSelected(e) {
@@ -326,7 +330,7 @@ class SpellDiagramNode extends NodeView {
 			var sp;
 			for( var i=0; i< this.m_effectSlots.length; i++) {
 				sp = this.m_effectSlots[i].pos;
-				if( p.getMagSq(sp) <= slotRadiusSq ) {
+				if( p.getDistSqFromVec(sp) <= slotRadiusSq ) {
 					console.log("touched effect " + i);
 					this.m_slotEquipMenu = new RadialLayer();
 					this.createEffSlotMenu(this.m_slotEquipMenu, sp, i);
@@ -336,10 +340,10 @@ class SpellDiagramNode extends NodeView {
 			
 			for( var i=0; i< this.m_modSlots.length; i++) {
 				sp = this.m_modSlots[i].pos;
-				if( p.getMagSq(sp) <= slotRadiusSq ) {
+				if( p.getDistSqFromVec(sp) <= slotRadiusSq ) {
 					console.log("touched mod " + i);
 					this.m_slotEquipMenu = new RadialLayer();
-					this.createEffSlotMenu(this.m_slotEquipMenu, sp, i);
+					this.createModSlotMenu(this.m_slotEquipMenu, sp, i);
 					return;
 				}
 			}
@@ -370,7 +374,7 @@ class SpellDiagramNode extends NodeView {
 		}
 	}
 	createEffSlotMenu( slotEquipMenu, pos, idx ) {
-		this.m_slotEquipMenu.setCenterNode(this.createPentNode(MOD_COLOR, BLACK_COLOR));
+		this.m_slotEquipMenu.setCenterNode(this.createPentNode(EFF_COLOR, BLACK_COLOR));
 		this.m_slotEquipMenu.pos.setVec( pos );
 		this.addChild(this.m_slotEquipMenu);
 
@@ -400,12 +404,52 @@ class SpellDiagramNode extends NodeView {
 		}
 	}
 	onMenuMod(e) {
-		//todo
 		console.log("on menu mod");
+		if( this.m_slotEquipMenu != null ) {
+			var mods = this.m_spellParts_Mods;
+			if( mods.hasOwnProperty(e.name)) {
+				//clear any previous labels
+				this.m_modSlots[e.idx].removeAllChildren(true);
+				//store json
+				this.m_modsJson[ e.idx ] = e.name; //sel;
+				
+				var label = new NodeView();
+				label.setLabel(e.name, "12px Helevetica");
+				label.pos.setVal(this.m_size.x/2, this.m_size.y/2);
+				this.m_modSlots[e.idx].addChild(label);
+			}
+			
+			//clean up menu
+			this.m_slotEquipMenu.removeFromParent(true);
+			this.m_slotEquipMenu = null;
+			
+			//send update event
+			EventBus.game.dispatch({evtName:"spellEditorUpdate", json:this.getSpellDiagramJson()});
+		}
 	}
 	onMenuEff(e) {
-		//todo
 		console.log("on menu eff");
+		if( this.m_slotEquipMenu != null ) {
+			var mods = this.m_spellParts_Effects;
+			if( mods.hasOwnProperty(e.name)) {
+				//clear any previous labels
+				this.m_effectSlots[e.idx].removeAllChildren(true);
+				//store json
+				this.m_effectsJson[ e.idx ] = e.name; //sel;
+				
+				var label = new NodeView();
+				label.setLabel(e.name, "12px Helevetica");
+				label.pos.setVal(this.m_size.x/2, this.m_size.y/2);
+				this.m_effectSlots[e.idx].addChild(label);
+			}
+			
+			//clean up menu
+			this.m_slotEquipMenu.removeFromParent(true);
+			this.m_slotEquipMenu = null;
+			
+			//send update event
+			EventBus.game.dispatch({evtName:"spellEditorUpdate", json:this.getSpellDiagramJson()});
+		}
 	}
 	
 	getSpellDiagramJson() {
@@ -480,12 +524,13 @@ class RadialLayer extends NodeView {
 	constructor( radius, tierRadius ) {
 		super();
 		this.m_center = null;
-
 		this.m_items = [];
-		this.m_radius = radius;
-		this.m_tierRadius = tierRadius;
+		this.m_radius = radius || 150;
+		this.m_tierRadius = tierRadius || 75;
 		
-		this.setCircle(150, "rgba(200,200,200, 0.7)");
+		this.size.setVal(this.m_radius*2, this.m_radius*2);
+		
+		this.setCircle(150, "rgba(200,200,200, 0.7)", "");
 		this.scale = 0.5;
 		this.tweenScale(0.5, 1);
 	}
@@ -503,6 +548,7 @@ class RadialLayer extends NodeView {
 	
 	addItem( node ) {
 		this.m_items.push(node);
+		this.addChild(node);
 		
 		//rearrange positions
 		var delta = (2 * Math.PI) / this.m_items.length;
@@ -511,10 +557,30 @@ class RadialLayer extends NodeView {
 		var tRadius = tier * this.m_tierRadius;
 		for( var i=0; i< this.m_items.length; i++) 
 		{
-			var x = (tRadius)* Math.cos(delta);
-			var y = (tRadius)* Math.sin(delta);
+			var x = (tRadius)* Math.cos(delta*i);
+			var y = (tRadius)* Math.sin(delta*i);
 			
 			this.m_items[i].pos.setVal(x,y);
+		}
+	}
+	
+	OnMouseDown(e, x,y) {
+		//make local to self origin
+		x -= this.pos.x;
+		y -= this.pos.y;
+		
+		if( this.fnOnClick ) {
+			var rSq = this.m_radius * this.m_radius;
+			var p = new Vec2D(x,y);
+			if( p.getDistSqFromVec(this.pos) <= rSq ) {
+				this.fnOnClick(e, x, y);
+			}
+		}
+		
+		if( this.onClickCallChildren ) {
+			for(var child of this.children) {
+				child.OnMouseDown(e, x, y);
+			}
 		}
 	}
 }
