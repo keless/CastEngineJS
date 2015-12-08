@@ -21,7 +21,7 @@ class SpellMakerView extends BaseStateView {
 		
 		
 		this.m_spellPageList = new SpellPageList();
-		//test this.rootView.addChild(this.m_spellPageList);
+		this.rootView.addChild(this.m_spellPageList);
 		
 		this.m_spellDiagram = new SpellDiagramNode();
 		this.m_spellDiagram.pos.setVal( gfx.getWidth()/2, gfx.getHeight()/2 );
@@ -366,9 +366,8 @@ class SpellDiagramNode extends NodeView {
 		{
 			label = new NodeView();
 			label.setLabel(modName, "20pt Helvetica")
-			label.setUserData({ name:modName, idx:idx });
 			label.setClick(function(e){
-				EventBus.ui.dispatch("slotMenuMod");
+				EventBus.ui.dispatch({ evtName:"slotMenuMod", name:modName, idx:idx });
 			});
 			this.m_slotEquipMenu.addItem(label);
 		}
@@ -388,10 +387,9 @@ class SpellDiagramNode extends NodeView {
 		for( var modName in this.m_spellParts_Effects )
 		{
 			label = new NodeView();
-			label.setLabel(modName, "20pt Helvetica")
-			label.setUserData({ name:modName, idx:idx });
+			label.setLabel(modName, "20pt Helvetica");
 			label.setClick(function(e){
-				EventBus.ui.dispatch("slotMenuEff");
+				EventBus.ui.dispatch({ evtName:"slotMenuEff", name:modName, idx:idx });
 			});
 			this.m_slotEquipMenu.addItem(label);
 		}
