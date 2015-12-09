@@ -75,15 +75,15 @@ class AnimationInstance {
 		this.startAnim(0, this.pAnimation.defaultAnim);
 	}
 	
-	event ( ct, event ) {
+	event ( ct, evt ) {
 		var state = this.pAnimation.graph[ this.currAnim ];
-		var next = state[event];
+		var next = state[evt];
 		if(next) {
 			//console.log("anIn move from " + this.currAnim + " to " + next);
 			this.startAnim(ct, next);
 			return true;
 		}else {
-			if(event != this.currAnim) console.warn("failed to handle event "+ event)
+			if(evt != this.currAnim) console.warn("failed to handle event "+ evt)
 		}
 		return false;
 	}

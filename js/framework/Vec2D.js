@@ -105,10 +105,10 @@ class Vec2D {
 	//phi = angle (from y positive axis) in radians
 	rotate( phi ) {
 		if(this.x == 0 && this.y == 0) return this; //special case
-		let c = Math.cos(phi);
-		let s = Math.sin(phi);
-		let x = this.x * c - this.y * s;
-		let y = this.x * s + this.y * c;
+		var c = Math.cos(phi);
+		var s = Math.sin(phi);
+		var x = this.x * c - this.y * s;
+		var y = this.x * s + this.y * c;
 		if( Math.abs(x) < 0.0000001 ) x = 0;
 		if( Math.abs(y) < 0.0000001 ) y = 0;
 		this.x = x;
@@ -118,10 +118,10 @@ class Vec2D {
 	//phi = angle (from y positive axis) in radians
 	getVecRotation( phi ) {
 		if(this.x == 0 && this.y == 0) return new Vec2D(0, 0); //special case
-		let c = Math.cos(phi);
-		let s = Math.sin(phi);
-		let x = this.x * c - this.y * s;
-		let y = this.x * s + this.y * c;
+		var c = Math.cos(phi);
+		var s = Math.sin(phi);
+		var x = this.x * c - this.y * s;
+		var y = this.x * s + this.y * c;
 		if( Math.abs(x) < 0.0000001 ) x = 0;
 		if( Math.abs(y) < 0.0000001 ) y = 0;
 		return new Vec2D(x, y);

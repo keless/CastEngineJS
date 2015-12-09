@@ -19,7 +19,6 @@ class SpellMakerView extends BaseStateView {
 
 		this.rootView.addChild(btnBack);
 		
-		
 		this.m_spellPageList = new SpellPageList();
 		this.rootView.addChild(this.m_spellPageList);
 		
@@ -35,8 +34,6 @@ class SpellMakerView extends BaseStateView {
 		this.SetListener("saveSpell", this.onSpellSave.bind(this));
 		this.SetListener("saveSpellNamed", this.onSpellSaveNamed.bind(this));
 		
-		
-		//test
 		this.m_spellDiagram.setDiagram( 1 );
 	}
 	
@@ -523,12 +520,12 @@ class SpellDiagramNode extends NodeView {
 class SpellDescriptionView extends NodeView {
 	constructor() {
 		super();
-		
+		//todo
 		this.SetListener("spellEditorUpdate", this.onSpellEditorUpdate.bind(this), EventBus.game)
 	}
 	
 	onSpellEditorUpdate(e) {
-		
+		//todo
 	}
 }
 

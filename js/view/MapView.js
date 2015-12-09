@@ -28,7 +28,7 @@ class MapView extends BaseStateView {
 	}
 	
 	OnKeyDown(e, x,y) {
-		let ship = this.model.userShip;
+		var ship = this.model.userShip;
 		if(ship) {
 			switch(e.keyCode) {
 				case KEY_RIGHT: 
@@ -70,7 +70,7 @@ class MapView extends BaseStateView {
 	}
 	
 	OnKeyUp(e, x,y) {
-		let ship = this.model.userShip;
+		var ship = this.model.userShip;
 		switch(e.keyCode) {
 			case KEY_RIGHT: 
 				if(ship) ship.controller.joystick.r = false; 
