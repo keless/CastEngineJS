@@ -71,9 +71,10 @@ class ButtonView extends NodeView {
 				this.unPressHandler = setTimeout(function(){ 
 					self.state = ButtonView.STATE_NORMAL;
 					}, 0.15 * 1000);
+					
+				e.isDone = true; return;
 			}
 		}
-		
 		super.OnMouseDown(e,x,y);
 	}
 	

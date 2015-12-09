@@ -41,13 +41,14 @@ class TableView extends NodeView {
 		var off = 0;
 		if( this.direction == TableView.VERTICAL ) {
 			for( var i=0; i<this.m_cells.length; i++) {
-				
 				this.m_cells[i].OnMouseDown(e, x, (y - off));
+				if(e.isDone) return;
 				off += this.m_cells[i].getHeight() + this.padding;
 			}
 		} else {
 			for( var i=0; i<this.m_cells.length; i++) {
 				this.m_cells[i].OnMouseDown(e, (x - off), y);
+				if(e.isDone) return;
 				off += this.m_cells[i].getWidth() + this.padding;
 			}
 		}

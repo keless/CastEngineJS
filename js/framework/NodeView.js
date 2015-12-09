@@ -204,12 +204,14 @@ class NodeView extends BaseListener {
 			var originY = -this.size.y/2;
 			if(Rect2D.isPointInArea(x, y, originX, originY, this.size.x, this.size.y)) {
 				this.fnOnClick(e, x, y);
+				if(e.isDone) return;
 			}
 		}
 		
 		if( this.onClickCallChildren ) {
 			for(var child of this.children) {
 				child.OnMouseDown(e, x, y);
+				if(e.isDone) return;
 			}
 		}
 	}

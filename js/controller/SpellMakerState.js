@@ -334,7 +334,7 @@ class SpellDiagramNode extends NodeView {
 					console.log("touched effect " + i);
 					this.m_slotEquipMenu = new RadialLayer();
 					this.createEffSlotMenu(this.m_slotEquipMenu, sp, i);
-					return;
+					e.isDone = true; return;
 				}
 			}
 			
@@ -344,7 +344,7 @@ class SpellDiagramNode extends NodeView {
 					console.log("touched mod " + i);
 					this.m_slotEquipMenu = new RadialLayer();
 					this.createModSlotMenu(this.m_slotEquipMenu, sp, i);
-					return;
+					e.isDone = true; return;
 				}
 			}
 		}
@@ -359,19 +359,28 @@ class SpellDiagramNode extends NodeView {
 		label.setLabel("cancel", "20pt Arial");
 		label.setClick(function(e){
 			EventBus.ui.dispatch("slotMenuCancel");
+			e.isDone = true;
 		});
 		this.m_slotEquipMenu.addItem(label);
 		
 		for( var modName in this.m_spellParts_Mods )
 		{
+			var bob = "x";
+			
 			label = new NodeView();
 			label.setLabel(modName, "20pt Helvetica")
-			label.setClick(function(e){
-				EventBus.ui.dispatch({ evtName:"slotMenuMod", name:modName, idx:idx });
-			});
+			label.setClick( this._createSlotMenuClickFn("slotMenuMod", modName, idx) );
 			this.m_slotEquipMenu.addItem(label);
 		}
 	}
+	
+	_createSlotMenuClickFn(evtName, modName, idx) {
+		return function(e) {
+			EventBus.ui.dispatch({ evtName:evtName, name:modName, idx:idx });
+			e.isDone = true;
+		}
+	}
+	
 	createEffSlotMenu( slotEquipMenu, pos, idx ) {
 		this.m_slotEquipMenu.setCenterNode(this.createPentNode(EFF_COLOR, BLACK_COLOR));
 		this.m_slotEquipMenu.pos.setVec( pos );
@@ -381,6 +390,7 @@ class SpellDiagramNode extends NodeView {
 		label.setLabel("cancel", "20pt Arial");
 		label.setClick(function(e){
 			EventBus.ui.dispatch("slotMenuCancel");
+			e.isDone = true;
 		});
 		this.m_slotEquipMenu.addItem(label);
 		
@@ -388,9 +398,7 @@ class SpellDiagramNode extends NodeView {
 		{
 			label = new NodeView();
 			label.setLabel(modName, "20pt Helvetica");
-			label.setClick(function(e){
-				EventBus.ui.dispatch({ evtName:"slotMenuEff", name:modName, idx:idx });
-			});
+			label.setClick( this._createSlotMenuClickFn("slotMenuEff", modName, idx) );
 			this.m_slotEquipMenu.addItem(label);
 		}
 	}
@@ -515,6 +523,12 @@ class SpellDiagramNode extends NodeView {
 class SpellDescriptionView extends NodeView {
 	constructor() {
 		super();
+		
+		this.SetListener("spellEditorUpdate", this.onSpellEditorUpdate.bind(this), EventBus.game)
+	}
+	
+	onSpellEditorUpdate(e) {
+		
 	}
 }
 
@@ -572,12 +586,14 @@ class RadialLayer extends NodeView {
 			var p = new Vec2D(x,y);
 			if( p.getDistSqFromVec(this.pos) <= rSq ) {
 				this.fnOnClick(e, x, y);
+				if(e.isDone) return;
 			}
 		}
 		
 		if( this.onClickCallChildren ) {
 			for(var child of this.children) {
 				child.OnMouseDown(e, x, y);
+				if(e.isDone) return;
 			}
 		}
 	}
