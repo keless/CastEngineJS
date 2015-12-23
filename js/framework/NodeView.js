@@ -147,25 +147,26 @@ class NodeView extends BaseListener {
 			this.animInstance.startAnim(ct, animState);
 		}
 	}
-	setLabel( labelText, labelFont, labelStyle ) {
+	setLabel( labelText, labelFont, labelStyle, multiLine ) {
 		if(this.labelText) {
 			console.error("NodeView: already has a label, abort!");
 			return;	
 		}
+		this.labelMultiLine = multiLine || false;
 		this.labelText = labelText;
 		this.labelFont = labelFont;
 		this.labelStyle = labelStyle;
 		var gfx = Service.Get("gfx");
-		var textSize = gfx.getTextSize(this.labelText, this.labelFont);
-		textSize.y *= 1.5; //add click padding
+		var textSize = gfx.getTextSize(this.labelText, this.labelFont, this.labelMultiLine);
+		//textSize.y *= 1.5; //add click padding
 		this.size.setVal( Math.max(this.size.x, textSize.x), Math.max(this.size.y, textSize.y));
 		var self = this;
 		this.fnCustomDraw.push(function(gfx, x,y, ct){
-			gfx.drawTextEx(self.labelText, x, y, self.labelFont, self.labelStyle);
+			gfx.drawTextEx(self.labelText, x, y, self.labelFont, self.labelStyle, self.labelMultiLine);
 		});
 	}
 	updateLabel( labelText ) {
-		if(!this.labelText) {
+		if( !isString(this.labelText) ) {
 			console.error("NodeView: cant update label, dont have one!");
 			return;	
 		}

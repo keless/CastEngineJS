@@ -203,21 +203,50 @@ class Graphics {
 		}
 		this.ctx.fillText(strText,x,y);
 	}
-	drawTextEx(strText, x,y, font, fillStyle ) {
+	drawTextEx(strText, x,y, font, fillStyle, multiLine ) {
 		this.ctx.font = font;
 		this.ctx.fillStyle = fillStyle || this.fillStyle;
-		if(this.drawCentered) {
-			var sized = this.ctx.measureText(strText);
-			x -= sized.width/2;
-			//y -= sized.height/2;
+		
+		if(!multiLine) {
+			if(this.drawCentered) {
+				var sized = this.ctx.measureText(strText);
+				x -= sized.width/2;
+				//y -= sized.height/2;
+			}
+			this.ctx.fillText(strText,x,y);
+		}else {
+			var lines = strText.split("/n");
+			var h = this.ctx.measureText("m").width * 1.5;
+			for( var line of lines) {
+				var lx = x;
+				if(this.drawCentered) {
+					var lineWidth = this.ctx.measureText(line).width;
+					lx -= lineWidth/2;
+				}
+				this.ctx.fillText(line, lx, y);
+				y += h;
+			}
 		}
-		this.ctx.fillText(strText,x,y);
 	}
-	getTextSize(text, font) {
+	getTextSize(text, font, multiLine) {
 		this.ctx.font = font || this.font;
-		var w = this.ctx.measureText(text).width;
+		
+		var numLines = 0;
+		var w = 0;
+		if( multiLine ) {
+			var lines = text.split("/n");
+			for( var line of lines) {
+				var lineWidth = this.ctx.measureText(line).width;
+				if( lineWidth > w ) w = lineWidth;
+				numLines++;
+			}
+		}else {
+			numLines = 1;
+			w = this.ctx.measureText(text).width;
+		}
+		
 		// fake it 'til you make it
-		var h = this.ctx.measureText("m").width;
+		var h = this.ctx.measureText("m").width * numLines * 1.5;
 		return new Vec2D(w, h);
 	}
 	drawImage(img, x,y) {

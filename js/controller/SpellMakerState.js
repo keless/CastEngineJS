@@ -26,7 +26,9 @@ class SpellMakerView extends BaseStateView {
 		this.m_spellDiagram.pos.setVal( gfx.getWidth()/2, gfx.getHeight()/2 );
 		this.rootView.addChild(this.m_spellDiagram);
 		
-		this.m_spellDescription = new SpellDescriptionView();
+		var descW = gfx.getWidth()/5;
+		var descArea = new Rect2D( gfx.getWidth() - descW, 0, descW, gfx.getHeight());
+		this.m_spellDescription = new SpellDescriptionView( descArea );
 		this.rootView.addChild(this.m_spellDescription);
 		
 		this.SetListener("btnBack", this.onBtnBack);
@@ -131,7 +133,7 @@ class SpellPageList extends NodeView {
 		for(var i=0; i< this.m_spellNames.length; i++) {
 			var labelText = this.m_spellNames[i];
 			var node = new NodeView();
-			node.setLabel(labelText, "12px Arial", "rgb(0,0,0)");
+			node.setLabel(labelText, "12px Arial", "rgb(0,0,0)", true);
 			node.setClick( this.createSpellCallback(labelText, i) );
 			this.m_list.addCell(node);
 		}
@@ -362,8 +364,6 @@ class SpellDiagramNode extends NodeView {
 		
 		for( var modName in this.m_spellParts_Mods )
 		{
-			var bob = "x";
-			
 			label = new NodeView();
 			label.setLabel(modName, "20pt Helvetica")
 			label.setClick( this._createSlotMenuClickFn("slotMenuMod", modName, idx) );
@@ -518,15 +518,100 @@ class SpellDiagramNode extends NodeView {
 }
 
 class SpellDescriptionView extends NodeView {
-	constructor() {
+	constructor( rectArea ) {
 		super();
+		
+		this.setRect(rectArea.getSizeVec().x, rectArea.getSizeVec().y, "rgba(255,0,0, 0.25)")
+		
+		this.m_text = new NodeView();
+		this.m_text.setLabel("", "18px Arial", "", true);
+		this.addChild(this.m_text);
+		
+		this.m_spell = {};
+		this.m_btnSave = new ButtonView("saveSpell", "gfx/btn_blue.sprite", "Save");
+		this.addChild(this.m_btnSave);
+		
+		this.size.setVec( rectArea.getSizeVec() );
+		this.pos.setVec( rectArea.getCenter() );
+		
+
+		this.SetListener("spellEditorUpdate", this.onSpellEditorUpdate.bind(this), EventBus.game);
+	}
+	
+	evaluateSpell(json) {
 		//todo
-		this.SetListener("spellEditorUpdate", this.onSpellEditorUpdate.bind(this), EventBus.game)
+		var level = json["diagramLevel"] || 1;
+		var dName = json["diagramName"] || "";
+		
+		var cStr1 = "Diagram Lvl " + level + " \n" + dName;
+    
+    var sp_mods = JsonManager.Get().getJson("SpellParts_Mods");
+    var sp_effs = JsonManager.Get().getJson("SpellParts_Effects");
+    
+    var castTime = 1;
+    var cooldownTime = 1;
+    var range = 1;
+    
+    this.m_spell = {};
+		
+    var effects = json["effects"] || {};
+    if( isArray(effects) ) {
+      this.m_spell["effectsOnCast"] = [];
+      for( var i=0; i < effects.length; i++) {
+        var effName = effects[i];
+        var sp = sp_effs[effName] || {};
+        if( !sp ) continue; 
+        
+        this.m_spell["effectsOnCast"].push(sp);
+      }
+    }
+    
+    var mods = json["mods"] || {};
+    if( isArray(mods) ) {
+      for( var i=0; i < mods.length; i++) {
+        if( !mods[i] ) continue;
+        var modName = mods[i];
+        var sp = sp_mods[modName] || {};
+        if( !sp ) continue;
+        
+        var modLevel = 1; //TODO: calculate mod level based on diagram position
+        var modLvlSq = modLevel*modLevel;
+        
+        var type = sp["type"] || "";
+        var modVal = sp["value"] || 0;
+        if( type == "range" ) {
+          range += modVal * modLvlSq;
+        }
+        else if( type == "cooldownTime" ) {
+          cooldownTime += modVal * modLvlSq;
+          if( cooldownTime < 0 ) cooldownTime = 0;
+        }
+        else if( type == "castTime" ) {
+          castTime += modVal * modLvlSq; 
+          if( castTime < 0 ) castTime = 0;
+        }
+      }
+    }
+    
+    this.m_spell["castTime"] = castTime;
+    this.m_spell["cooldownTime"] = cooldownTime;
+    this.m_spell["range"] = range;
+    
+    var cStr2 = "castTime "+ castTime + "\ncooldown " + cooldownTime + "\nrange " + range;
+    var str3 = "";
+    for( var i=0; i < this.m_spell["effectsOnCast"].length; i++) {
+      str3 += JSON.stringify(this.m_spell["effectsOnCast"][i] );
+    } 
+    
+    var cStrF = cStr1 + "\n" + cStr2 + "\n" + str3;
+    this.m_text.updateLabel( cStrF );
 	}
 	
 	onSpellEditorUpdate(e) {
-		//todo
+    this.evaluateSpell( e.json );
 	}
+	
+	getSpellJson() { return this.m_spell; }
 }
 
 class RadialLayer extends NodeView {

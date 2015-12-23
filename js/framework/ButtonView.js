@@ -20,7 +20,9 @@ class ButtonView extends NodeView {
 			sprite = RP.getSprite(sprite);
 		}
 		
-		this.setSprite( sprite );
+		if( sprite ) {
+			this.setSprite( sprite );
+		}
 		
 		this.setLabel( label, labelFont, labelStyle );
 		
@@ -72,10 +74,9 @@ class ButtonView extends NodeView {
 					self.state = ButtonView.STATE_NORMAL;
 					}, 0.15 * 1000);
 					
-				e.isDone = true; return;
+				e.isDone = true;return;
 			}
 		}
 		super.OnMouseDown(e,x,y);
 	}
-	
 }

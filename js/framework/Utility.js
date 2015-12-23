@@ -18,6 +18,10 @@ function isString( obj ) {
 	return (typeof obj === 'string' || obj instanceof String);
 }
 
+function isArray( obj ) {
+  return obj.constructor === Array || Array.isArray(obj);
+}
+
 
 //fnCallback = function (data)  where data = null on error
 function getJSON( url, fnCallback ) {
