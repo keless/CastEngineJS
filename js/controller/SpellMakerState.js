@@ -600,7 +600,7 @@ class SpellDescriptionView extends NodeView {
     var cStr2 = "castTime "+ castTime + "\ncooldown " + cooldownTime + "\nrange " + range;
     var str3 = "";
     for( var i=0; i < this.m_spell["effectsOnCast"].length; i++) {
-      str3 += JSON.stringify(this.m_spell["effectsOnCast"][i] );
+      str3 += JSON.stringify(this.m_spell["effectsOnCast"][i], null, '\t');
     } 
     
     var cStrF = cStr1 + "\n" + cStr2 + "\n" + str3;
