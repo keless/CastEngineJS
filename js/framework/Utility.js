@@ -48,3 +48,55 @@ function getJSON( url, fnCallback ) {
 	
 	request.send();
 }
+
+function CreateSimpleButton( strLabel, strEvt, strBus ) 
+{
+  var area = new Vec2D(100,40);
+  
+  var btn = new NodeView();
+  btn.setRect(area.x, area.y, "rgb(50,150,50)");
+  btn.setLabel(strLabel);
+  btn.setClick(function(){
+    EventBus.Get(strBus).dispatch({evtName:strEvt, from:btn});
+  });
+}
+
+function CreateSimplePopup( strMsg, strBtnLabel, okEvt, strBus ) 
+{
+  var area = new Vec2D(300, 250);
+  
+  var pop = new NodeView();
+  pop.setRect(area.x, area.y, "rgb(200,200,200)");
+  
+  var btn = CreateSimpleButton(strBtnLabel, okEvt, strBus );
+  btn.pos.y = area.y/2;
+  pop.addChild(btn);
+  
+  console.log("button size " + btn.size.x + "," + btn.size.y);
+  area.y -= btn.size.y;
+  var label = new NodeView();
+  label.setLabel( strMsg, "24px Arial", "rgb(0,0,0)", true);
+  label.pos.y = area.y;
+  pop.addChild(label);
+}
+
+function CreateSimpleEditBox( strMsg, strDefaultTxt, strBtnLabel, okEvt, strBus ) {
+  var area = new Vec2D(300, 250);
+  
+  var pop = new NodeView();
+  pop.setRect(area.x, area.y, "rgb(200,200,200)");
+  
+  var btn = CreateSimpleButton(strBtnLabel, okEvt, strBus );
+  btn.pos.y = area.y/2;
+  pop.addChild(btn);
+  
+  console.log("button size " + btn.size.x + "," + btn.size.y);
+  area.y -= btn.size.y;
+  var label = new NodeView();
+  label.setLabel( strMsg, "24px Arial", "rgb(0,0,0)", true);
+  label.pos.y = area.y;
+  pop.addChild(label);
+  
+  //TODO: how to text field
+  
+}
