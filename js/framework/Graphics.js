@@ -215,8 +215,8 @@ class Graphics {
 			}
 			this.ctx.fillText(strText,x,y);
 		}else {
-			var lines = strText.split("/n");
-			var h = this.ctx.measureText("m").width * 1.5;
+			var lines = strText.split('\n');
+			var h = this.ctx.measureText('m').width * 1.5;
 			for( var line of lines) {
 				var lx = x;
 				if(this.drawCentered) {
@@ -234,7 +234,7 @@ class Graphics {
 		var numLines = 0;
 		var w = 0;
 		if( multiLine ) {
-			var lines = text.split("/n");
+			var lines = text.split('\n');
 			for( var line of lines) {
 				var lineWidth = this.ctx.measureText(line).width;
 				if( lineWidth > w ) w = lineWidth;
