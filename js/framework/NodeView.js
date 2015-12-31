@@ -10,6 +10,7 @@ class NodeView extends BaseListener {
 		this.size = new Vec2D();
 		this.rotation = 0;
 		this.scale = 1;
+    this._visible = true;
 
 		this.pUser = null;
 
@@ -25,6 +26,11 @@ class NodeView extends BaseListener {
 	}
 	
 	Destroy() {
+    
+    if(this.textInput) {
+      this.textInput.destroy();
+    }
+    
 		//override me to clean up
 		for(var child of this.children) {
 			child.Destroy();
@@ -32,6 +38,16 @@ class NodeView extends BaseListener {
 		
 		super.Destroy();
 	}
+  
+  get visible() {
+    return this._visible;
+  }
+  set visible(val) {
+    this._visible = val;
+    if(this.textInput) {
+      this.textInput.enabled = val;
+    }
+  }
 	
 	get worldRotation() {
 		if(this.parent) {
@@ -175,7 +191,54 @@ class NodeView extends BaseListener {
 	updateLabelStyle( style ) {
 		this.labelStyle = style;
 	}
-	
+  
+  setTextInput( w, h ) {
+    if(this.textInput) {
+			console.error("NodeView: already has a text input, abort!");
+			return;	
+    }
+    
+    var margin = 2;
+    var gfx = Service.Get("gfx");
+    this.textInput = new CanvasInput({ 
+        canvas:gfx.canvas,
+        width:w - margin, 
+        height:h - margin, 
+        padding:0, 
+        borderRadius:margin,
+        boxShadow: '1px 1px 0px #fff',
+        innerShadow: '0px 0px 2px rgba(0, 0, 0, 0.5)'
+        });
+    this.textInput.vecPos = this.pos;
+        
+		this.size.setVal( Math.max(this.size.x, w), Math.max(this.size.y, h));
+		var self = this;
+    this.textInput.onsubmit( function(e, canvasInput) {
+      EventBus.ui.dispatch({evtName:"textInputSubmitted", value:canvasInput.value(), node:self });
+    });
+		this.fnCustomDraw.push(function(gfx, x,y, ct){
+      self.textInput.renderNow(x, y);
+		});
+	}
+  
+  getTextInputValue() {
+    if( this.textInput ) {
+      return this.textInput.value();
+    }
+    return null;
+  }
+  setTextInputValue( text ) {
+    if(this.textInput) {
+      this.textInput.value(text);
+    }
+  }
+  clearTextInputValue() {
+    if( this.textInput ) {
+      this.textInput.value('');
+    }
+  }
+  
+  
 	///fn(gfx, x,y, ct)
 	addCustomDraw( fn ) {
 		this.fnCustomDraw.push(fn);
@@ -188,6 +251,7 @@ class NodeView extends BaseListener {
 	
 	//x,y should be sent relative to node origin
 	OnMouseDown(e, x,y) {
+    if(!this.visible) return;
 		
 		//make local to self origin
 		x -= this.pos.x;
@@ -204,11 +268,11 @@ class NodeView extends BaseListener {
 			var originX = -this.size.x/2;
 			var originY = -this.size.y/2;
 			if(Rect2D.isPointInArea(x, y, originX, originY, this.size.x, this.size.y)) {
-				this.fnOnClick(e, x, y);
+				if(this.fnOnClick) { this.fnOnClick(e, x, y); }
 				if(e.isDone) return;
 			}
 		}
-		
+
 		if( this.onClickCallChildren ) {
 			for(var child of this.children) {
 				child.OnMouseDown(e, x, y);
@@ -216,6 +280,53 @@ class NodeView extends BaseListener {
 			}
 		}
 	}
+  
+  OnKeyDown(e, x,y) {
+    if(!this.visible) return;
+    
+		//make local to self origin
+		x -= this.pos.x;
+		y -= this.pos.y;
+		//rotate
+		if(this.rotation != 0) {
+			var v = new Vec2D(x,y);
+			v.rotate(-this.rotation);
+			x = v.x;
+			y = v.y;
+		}
+    
+    if(this.textInput) {
+      this.textInput.keydown(e, this.textInput);
+    }
+    
+    for(var child of this.children) {
+      child.OnKeyDown(e, x, y);
+      if(e.isDone) return;
+    }
+  }
+  OnKeyUp(e, x,y) {
+    if(!this.visible) return;
+    
+		//make local to self origin
+		x -= this.pos.x;
+		y -= this.pos.y;
+		//rotate
+		if(this.rotation != 0) {
+			var v = new Vec2D(x,y);
+			v.rotate(-this.rotation);
+			x = v.x;
+			y = v.y;
+		}
+    
+    if(this.textInput) {
+      this.textInput.onkeyup(e, this.textInput);
+    }
+    
+    for(var child of this.children) {
+      child.OnKeyUp(e, x, y);
+      if(e.isDone) return;
+    }
+  }
 	
 	getWidth() {
 		return this.size.x;
@@ -261,7 +372,8 @@ class NodeView extends BaseListener {
 
 	//draw function
 	Draw( gfx, x, y, ct ) {
-		
+		if(!this.visible) return;
+    
 		this.handleActions(ct);
 		
 		gfx.saveMatrix();

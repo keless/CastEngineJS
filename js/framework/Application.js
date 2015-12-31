@@ -14,12 +14,14 @@ class Application {
 
 		//setup canvas keypress handlers
 		var appSelf = this;	
+    /*
 		document.onkeydown = function(e) {
 			appSelf.OnKeyDown(e);
 		}
 		document.onkeyup = function(e) {
 			appSelf.OnKeyUp(e);
 		}
+    */
 		
 		var updateLastMousePos = function(e) {
 			var canvas = Service.Get("gfx").canvas;

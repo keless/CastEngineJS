@@ -1037,12 +1037,18 @@
       return this._renderCanvas;
     },
 
+    render: function() {
+      //xxx play nice
+      // override render so it doesnt go immediately
+    },
     /**
      * Clears and redraws the CanvasInput on an off-DOM canvas,
      * and if a main canvas is provided, draws it all onto that.
      * @return {CanvasInput}
      */
-    render: function() {
+    //xxx play nice
+    // inefficient, but we're redrawing every frame for now
+    renderNow: function(x, y) {
       var self = this,
         ctx = self._renderCtx,
         w = self.outerW,
@@ -1057,7 +1063,8 @@
       }
 
       // clear the canvas
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+//xxx play nice 
+//ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
       // setup the box shadow
       ctx.shadowOffsetX = self._boxShadow.x;
@@ -1167,8 +1174,9 @@
 
         // draw to the visible canvas
         if (self._ctx) {
-          self._ctx.clearRect(self._x, self._y, ctx.canvas.width, ctx.canvas.height);
-          self._ctx.drawImage(self._renderCanvas, self._x, self._y);
+ //xxx play nice
+ //         self._ctx.clearRect(self._x, self._y, ctx.canvas.width, ctx.canvas.height);
+          self._ctx.drawImage(self._renderCanvas, x, y);
         }
 
         return self;
@@ -1303,6 +1311,7 @@
      * Update the width and height of the off-DOM canvas when attributes are changed.
      */
     _updateCanvasWH: function() {
+
       var self = this,
         oldW = self._renderCanvas.width,
         oldH = self._renderCanvas.height;
@@ -1315,7 +1324,8 @@
 
       // clear the main canvas
       if (self._ctx) {
-        self._ctx.clearRect(self._x, self._y, oldW, oldH);
+ //xxx play nice
+ //       self._ctx.clearRect(self._x, self._y, oldW, oldH);
       }
     },
 
@@ -1355,11 +1365,19 @@
      * @return {Boolean}   True if it is over the input box.
      */
     _overInput: function(x, y) {
+      //xxx play nice
+      var self = this,
+        xLeft = x >= self.vecPos.x + self._extraX,
+        xRight = x <= self.vecPos.x + self._extraX + self._width + self._padding * 2,
+        yTop = y >= self.vecPos.y + self._extraY,
+        yBottom = y <= self.vecPos.y + self._extraY + self._height + self._padding * 2;
+      /*
       var self = this,
         xLeft = x >= self._x + self._extraX,
         xRight = x <= self._x + self._extraX + self._width + self._padding * 2,
         yTop = y >= self._y + self._extraY,
         yBottom = y <= self._y + self._extraY + self._height + self._padding * 2;
+        */
 
       return xLeft && xRight && yTop && yBottom;
     },
@@ -1385,11 +1403,15 @@
         totalW = 0,
         pos = text.length;
 
-      if (x - (self._x + self._extraX) < self._textWidth(text)) {
+      //xxx play nice
+      //if (x - (self._x + self._extraX) < self._textWidth(text)) {
+      if (x - (self.vecPos.x + self._extraX) < self._textWidth(text)) {
         // loop through each character to identify the position
         for (var i=0; i<text.length; i++) {
           totalW += self._textWidth(text[i]);
-          if (totalW >= x - (self._x + self._extraX)) {
+          //xxx play nice
+          //if (totalW >= x - (self._x + self._extraX)) {
+          if (totalW >= x - (self.vecPos.x + self._extraX)) {
             pos = i;
             break;
           }

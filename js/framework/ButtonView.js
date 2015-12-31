@@ -4,7 +4,7 @@ class ButtonView extends NodeView {
 	static get STATE_NORMAL() { return 0 }
 	static get STATE_PRESSED() { return 1 }
 	
-	constructor(btnID, sprite, label, labelFont, labelStyle ) {
+	constructor(btnID, sprite, label, labelFont, labelStyle, onClickData ) {
 		labelFont = labelFont || "10px Arial";
 		labelStyle = labelStyle || "#CCCCCC";
 		super();
@@ -12,9 +12,10 @@ class ButtonView extends NodeView {
 		this.state = ButtonView.STATE_NORMAL;
 		
 		this.size = new Vec2D();
+    
+    this.evt = onClickData || {};
+    this.evt["evtName"] = btnID;
 
-		this.btnID = btnID;		
-		
 		if(isString(sprite)) {
 			var RP = Service.Get("rp");
 			sprite = RP.getSprite(sprite);
@@ -68,7 +69,7 @@ class ButtonView extends NodeView {
 			//mouse down inside, handle button click
 			if(this.state == ButtonView.STATE_NORMAL) {
 				this.state = ButtonView.STATE_PRESSED;
-				EventBus.ui.dispatch({evtName:this.btnID, sender:this});
+				EventBus.ui.dispatch(this.evt);
 				var self = this;
 				this.unPressHandler = setTimeout(function(){ 
 					self.state = ButtonView.STATE_NORMAL;

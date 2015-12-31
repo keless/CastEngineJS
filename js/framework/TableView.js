@@ -17,10 +17,6 @@ class TableView extends NodeView {
 		this.direction = TableView.VERTICAL;
 	}
 	
-	Destroy() {
-		
-	}
-	
 	addCell( cell ) {
 		this.m_cells.push(cell);
 	}

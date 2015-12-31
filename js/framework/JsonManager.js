@@ -31,11 +31,19 @@ class JsonManager
 			if(!path) {
 				return this.m_domains[domain];
 			}else {
-				// TODO: recursive path splitting
-				return this.m_domains[domain][path];
+        var arr = path.split('.');
+        if(arr.length == 1) return this.m_domains[domain][path]; 
+        
+        var to = this.m_domains[domain];
+        for( var i=0; i < arr.length; i++ ) {
+          if( to.hasOwnProperty(path) ) {
+            to = to[path];
+          }
+        }
+        return to;
 			}
 		}
-		return nil;
+		return null;
 	}
 }
 
