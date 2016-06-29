@@ -158,7 +158,7 @@ class CastEffect {
 		return this.m_pParent;
 	}
 	
-	//CastCommandEntity
+	//ICastEntity
 	getOriginEntity() {
 		return this.m_pOrigin;
 	}

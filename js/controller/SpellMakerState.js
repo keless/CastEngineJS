@@ -14,7 +14,7 @@ class SpellMakerView extends BaseStateView {
 		var gfx = Service.Get("gfx");
 		this.rootView.setImageStretch("gfx/workbench3.png", 0,0, gfx.getWidth(), gfx.getHeight());
 
-		var btnBack =  new ButtonView("btnBack", "gfx/btn_blue.sprite", "back");
+		var btnBack = new ButtonView("btnBack", "gfx/btn_blue.sprite", "back");
 		btnBack.pos.setVal(gfx.getWidth()/2, 50);
 
 		this.rootView.addChild(btnBack);
@@ -46,6 +46,7 @@ class SpellMakerView extends BaseStateView {
 	
 	onSpellSave() {
 		//todo
+    CreateSimpleEditBox("must enter a name", "spell name", "Save", "saveSpellNamed");
 	}
 	
 	onSpellSaveNamed() {
